@@ -1,0 +1,5 @@
+services:
+    _instanceof:
+        CourseBundle\Recommendation\Infrastructure\Symfony\Controller\:
+            resource: '../src/Recommendation/Infrastructure/Symfony/Controller'
+            tags: ['controller.service_arguments']

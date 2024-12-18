@@ -1,5 +1,6 @@
-controllers:
+quote_controller:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: '../src/Recommendation/Infrastructure/Symfony/Controller/'
+        namespace: CourseBundle\Recommendation\Infrastructure\Symfony\Controller
     type: attribute
+    name_prefix: 'api_'

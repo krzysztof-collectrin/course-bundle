@@ -2,16 +2,44 @@
 
 declare(strict_types=1);
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+namespace CourseBundle\Tests;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class QuoteControllerTest extends WebTestCase
 {
+    private KernelBrowser $client;
+    public function setUp(): void
+    {
+        $this->client = static::createClient();
+        $this->createAuthenticatedClient(
+            'chammes@daugherty.com',
+            'password123',
+        );
+    }
+
+    protected function createAuthenticatedClient($username = 'user', $password = 'password'): void
+    {
+        $this->client->jsonRequest(
+            'POST',
+            '/api/login_check',
+            [
+                'username' => $username,
+                'password' => $password,
+            ]
+        );
+
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->client->setServerParameter('Authorization', sprintf('Bearer %s', $data['token']));
+    }
+
     public function testValidPayload(): void
     {
-        $client = static::createClient();
-
-        $client->request('POST', '/api/quotes', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $this->client->request('POST', '/api/quotes', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode([
             'topics' => [
                 'math' => 50,
                 'science' => 30,
@@ -20,15 +48,15 @@ class QuoteControllerTest extends WebTestCase
         ]));
 
         $this->assertResponseIsSuccessful();
-        $this->assertJson($client->getResponse()->getContent());
-        $this->assertStringContainsString('provider_a', $client->getResponse()->getContent());
+        $this->assertJson($this->client->getResponse()->getContent());
+        $this->assertStringContainsString('provider_a', $this->client->getResponse()->getContent());
     }
 
     public function testInvalidPayload(): void
     {
-        $client = static::createClient();
-
-        $client->request('POST', '/api/quotes', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $this->client->request('POST', '/api/quotes', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode([
             'topics' => [],
         ]));
 
@@ -37,9 +65,9 @@ class QuoteControllerTest extends WebTestCase
 
     public function testInvalidStringTopicsType(): void
     {
-        $client = static::createClient();
-
-        $client->request('POST', '/api/quotes', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $this->client->request('POST', '/api/quotes', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            ], json_encode([
             'topics' => [
                 'math' => 'test',
                 'science' => 'sut',
@@ -52,9 +80,9 @@ class QuoteControllerTest extends WebTestCase
 
     public function testInvalidSignedIntegerTopicsType(): void
     {
-        $client = static::createClient();
-
-        $client->request('POST', '/api/quotes', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $this->client->request('POST', '/api/quotes', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            ], json_encode([
             'topics' => [
                 'math' => -5,
                 'science' => 0,

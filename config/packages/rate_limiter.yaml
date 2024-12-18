@@ -1,0 +1,6 @@
+framework:
+    rate_limiter:
+      quote_generate:
+          policy: fixed_window
+          limit: 50
+          interval: '1 minute'

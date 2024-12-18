@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace CourseBundle\Tests;
+
 use CourseBundle\Recommendation\Domain\Entity\TeacherRequest;
 use CourseBundle\Recommendation\Domain\Service\QuoteCalculator;
 use CourseBundle\Recommendation\Domain\ValueObject\ProviderTopics;
@@ -14,6 +16,7 @@ class QuoteCalculatorTest extends TestCase
     public function setUp(): void
     {
         $this->calculator = new QuoteCalculator();
+
     }
 
     public function testCalculatesQuoteForTwoTopicMatchesWithProviderA(): void

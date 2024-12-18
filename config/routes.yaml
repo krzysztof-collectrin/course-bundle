@@ -4,3 +4,5 @@ quote_controller:
         namespace: CourseBundle\Recommendation\Infrastructure\Symfony\Controller
     type: attribute
     name_prefix: 'api_'
+api_login_check:
+    path: /api/login_check

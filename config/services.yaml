@@ -19,6 +19,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Recommendation/Domain/Entity/'
             - '../src/Recommendation/Domain/ValueObject/'
+            - '../src/User/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
@@ -27,3 +28,19 @@ services:
     CourseBundle\Recommendation\Infrastructure\Provider\ProviderConfigLoader:
         arguments:
             $filePath: '%provider_config_path%'
+
+    CourseBundle\Recommendation\Infrastructure\Symfony\Logging\AddRequestIdProcessor:
+        tags:
+            - { name: monolog.processor }
+
+    CourseBundle\Shared\Security\UserDataFromJWTListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest', priority: 7 }
+    CourseBundle\Shared\Security\JWTCreatedListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'lexik_jwt_authentication.on_jwt_created', method: 'onJWTCreated' }
+
+    CourseBundle\Shared\EventListener\LoggingSubscriber:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
